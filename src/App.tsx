@@ -11,76 +11,46 @@ import {
   Green,
   generateGraph,
 } from "./graphGeneration/generateGraph";
+import { handleLineDraw } from "./handleLineDraw";
+import { positionGraph } from "./graphGeneration/positionGraph";
+import { addLinesToGraph } from "./graphGeneration/addLinesToGraph";
 
-const INITIAL_STATE = generateGraph();
+const INITIAL_STATE = addLinesToGraph(positionGraph(generateGraph()));
 
-const handleLineDraw = (graph: Graph, id: number) => {
-  console.log("line drawn");
-  const line = graph[id];
-  const parent = line.parentIds[0];
-  const child = line.childrenIds[0];
-  let { x: startX, y: startY } = graph[parseInt(parent)];
-  let { x: endX, y: endY } = graph[parseInt(child)];
+const updateClosest = (
+  x: number,
+  y: number,
+  selectedId: number,
+  prevState: Graph
+) => {
+  const newState = _.cloneDeep(prevState);
+  let closest = 0;
+  let dist = Infinity;
 
-  if (line?.x2 && line?.y2) {
-    startX = line.x;
-    startY = line.y;
-    endX = line.x2;
-    endY = line.y2;
-  }
-  line.x = startX;
-  line.y = startY;
-  line.x2 = endX;
-  line.y2 = endY;
+  Object.keys(newState).map((k) => {
+    const id = parseInt(k);
+    if (id === selectedId) {
+      return;
+    }
+    if (newState[id].elementType == Line) {
+      return;
+    }
+    let { x: currX, y: currY } = newState[id];
 
-  console.log(startX, startY, endX, endY);
-  console.log(graph[parseInt(child)].x);
-  return (
-    <Line
-      points={[startX, startY, endX, endY]}
-      stroke="black"
-      strokeWidth={4}
-      closed={true}
-    />
-  );
+    let curr = Math.sqrt(Math.abs(currX - x) ** 2 + Math.abs(currY - y) ** 2);
+    dist = Math.min(curr, dist);
+    if (dist === curr) {
+      closest = id;
+    }
+    newState[id].color = Green;
+  });
+
+  newState[closest].color = Blue;
+  return newState;
 };
 
 function App() {
   const [graphComponents, setGraphComponents] = React.useState(INITIAL_STATE);
-
-  const updateClosest = (
-    x: number,
-    y: number,
-    selectedId: number,
-    prevState: Graph
-  ) => {
-    const newState = _.cloneDeep(prevState);
-    let closest = 0;
-    let dist = Infinity;
-
-    console.log(newState[0], newState[9]);
-
-    Object.keys(newState).map((k) => {
-      const id = parseInt(k);
-      if (id === selectedId) {
-        return;
-      }
-      let { x: currX, y: currY } = newState[id];
-
-      // if ([0, 9].includes(id)) {
-      //   console.log(id, currX, currY);
-      // }
-      let curr = Math.sqrt(Math.abs(currX - x) ** 2 + Math.abs(currY - y) ** 2);
-      dist = Math.min(curr, dist);
-      if (dist === curr) {
-        closest = id;
-      }
-      newState[id].color = Green;
-    });
-
-    newState[closest].color = Blue;
-    return newState;
-  };
 
   const updateDragged = (id: number, val: boolean) => {
     setGraphComponents((prevState: Graph) => {
@@ -160,12 +130,6 @@ function App() {
       <Layer>
         <Text text="Try to drag a circle" />
         {Object.keys(graphComponents).map((key) => {
-          if (graphComponents[parseInt(key)].elementType === Circle) {
-            console.log(
-              graphComponents[parseInt(key)].x,
-              graphComponents[parseInt(key)].y
-            );
-          }
           return graphComponents[parseInt(key)].elementType === Circle ? (
             <Circle
               key={key}
