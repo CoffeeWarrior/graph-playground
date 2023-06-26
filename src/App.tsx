@@ -14,11 +14,47 @@ import {
 
 const INITIAL_STATE = generateGraph();
 
+const handleLineDraw = (graph: Graph, id: number) => {
+  console.log("line drawn");
+  const line = graph[id];
+  const parent = line.parentIds[0];
+  const child = line.childrenIds[0];
+  let { x: startX, y: startY } = graph[parseInt(parent)];
+  let { x: endX, y: endY } = graph[parseInt(child)];
+
+  if (line?.x2 && line?.y2) {
+    startX = line.x;
+    startY = line.y;
+    endX = line.x2;
+    endY = line.y2;
+  }
+  line.x = startX;
+  line.y = startY;
+  line.x2 = endX;
+  line.y2 = endY;
+
+  console.log(startX, startY, endX, endY);
+  console.log(graph[parseInt(child)].x);
+  return (
+    <Line
+      points={[startX, startY, endX, endY]}
+      stroke="black"
+      strokeWidth={4}
+      closed={true}
+    />
+  );
+};
+
 function App() {
   const [graphComponents, setGraphComponents] = React.useState(INITIAL_STATE);
 
-  const updateClosest = (x: number, y: number, selectedId: number) => {
-    const newState = _.cloneDeep(graphComponents);
+  const updateClosest = (
+    x: number,
+    y: number,
+    selectedId: number,
+    prevState: Graph
+  ) => {
+    const newState = _.cloneDeep(prevState);
     let closest = 0;
     let dist = Infinity;
 
@@ -43,7 +79,7 @@ function App() {
     });
 
     newState[closest].color = Blue;
-    setGraphComponents(newState);
+    return newState;
   };
 
   const updateDragged = (id: number, val: boolean) => {
@@ -78,6 +114,7 @@ function App() {
     //find id of obj being moved
     //set isDragging True
     //create queue of obj's and their children to be updated
+    //updateClosest(e.target.x(), e.target.y(), id);
     setGraphComponents((prevState: Graph) => {
       const newState = _.cloneDeep(prevState);
       const startX = newState[id].x;
@@ -93,6 +130,10 @@ function App() {
 
         newState[id].x = relativeX + e.target.x();
         newState[id].y = relativeY + e.target.y();
+        if (newState[id]?.x2 !== undefined && newState[id]?.y2 !== undefined) {
+          newState[id].x2 = newState[id].x2! - startX + e.target.x();
+          newState[id].y2 = newState[id].y2! - startY + e.target.y();
+        }
         if (newState[id].childrenIds.length > 0) {
           queue.push(...newState[id].childrenIds.map((id) => parseInt(id)));
         }
@@ -100,8 +141,9 @@ function App() {
 
       return newState;
     });
-
-    updateClosest(e.target.x(), e.target.y(), id);
+    setGraphComponents((prevState: Graph) =>
+      updateClosest(e.target.x(), e.target.y(), id, prevState)
+    );
   };
 
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
@@ -117,29 +159,39 @@ function App() {
     <Stage width={window.innerWidth} height={window.innerHeight}>
       <Layer>
         <Text text="Try to drag a circle" />
-        {Object.keys(graphComponents).map((key) => (
-          <Circle
-            key={key}
-            radius={parseInt(key) * 10 + 10}
-            id={key}
-            x={graphComponents[parseInt(key)].x}
-            y={graphComponents[parseInt(key)].y}
-            numPoints={5}
-            fill={graphComponents[parseInt(key)].color}
-            opacity={0.8}
-            draggable
-            shadowColor="black"
-            shadowBlur={10}
-            shadowOpacity={0.6}
-            shadowOffsetX={graphComponents[parseInt(key)].isDragging ? 10 : 5}
-            shadowOffsetY={graphComponents[parseInt(key)].isDragging ? 10 : 5}
-            scaleX={graphComponents[parseInt(key)].isDragging ? 1.2 : 1}
-            scaleY={graphComponents[parseInt(key)].isDragging ? 1.2 : 1}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragMove={onDragMove}
-          />
-        ))}
+        {Object.keys(graphComponents).map((key) => {
+          if (graphComponents[parseInt(key)].elementType === Circle) {
+            console.log(
+              graphComponents[parseInt(key)].x,
+              graphComponents[parseInt(key)].y
+            );
+          }
+          return graphComponents[parseInt(key)].elementType === Circle ? (
+            <Circle
+              key={key}
+              radius={10}
+              id={key}
+              x={graphComponents[parseInt(key)].x}
+              y={graphComponents[parseInt(key)].y}
+              numPoints={5}
+              fill={graphComponents[parseInt(key)].color}
+              opacity={0.8}
+              draggable
+              shadowColor="black"
+              shadowBlur={10}
+              shadowOpacity={0.6}
+              shadowOffsetX={graphComponents[parseInt(key)].isDragging ? 10 : 5}
+              shadowOffsetY={graphComponents[parseInt(key)].isDragging ? 10 : 5}
+              scaleX={graphComponents[parseInt(key)].isDragging ? 1.2 : 1}
+              scaleY={graphComponents[parseInt(key)].isDragging ? 1.2 : 1}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragMove={onDragMove}
+            />
+          ) : (
+            handleLineDraw(graphComponents, parseInt(key))
+          );
+        })}
       </Layer>
     </Stage>
   );
