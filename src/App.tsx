@@ -4,7 +4,7 @@ import "./App.css";
 
 import { Stage, Layer, Circle, Text, Line } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import _ from "lodash";
+import _, { set } from "lodash";
 import {
   Blue,
   Graph,
@@ -16,6 +16,19 @@ import { positionGraph } from "./graphGeneration/positionGraph";
 import { addLinesToGraph } from "./graphGeneration/addLinesToGraph";
 
 const INITIAL_STATE = addLinesToGraph(positionGraph(generateGraph()));
+
+//current task:
+const removeLines = (graph: Graph) => {
+  let deque = [1];
+  while (deque.length > 1) {
+    let currId = deque.shift();
+    if (!currId) {
+      break;
+    }
+  }
+};
+
+const removeGhosts = () => {};
 
 const updateClosest = (
   x: number,
@@ -29,6 +42,17 @@ const updateClosest = (
 
   Object.keys(newState).map((k) => {
     const id = parseInt(k);
+    let deque = [selectedId];
+    while (deque.length > 0) {
+      let i = deque.shift();
+      if (!i) {
+        break;
+      }
+      if (id === i) {
+        return;
+      }
+      newState[i].childrenIds.forEach((id: string) => deque.push(parseInt(id)));
+    }
     if (id === selectedId) {
       return;
     }
@@ -47,6 +71,31 @@ const updateClosest = (
 
   newState[closest].color = Blue;
   return newState;
+};
+
+const adjustGraph = (graph: Graph, selectedId: number) => {
+  const deque = [1];
+  let closest = 1;
+  while (deque.length > 0) {
+    const currId = deque.shift();
+    if (!currId) {
+      break;
+    }
+    if (graph[currId].color === Blue) {
+      closest = currId;
+      break;
+    }
+    graph[currId].childrenIds.forEach((id: string) => deque.push(parseInt(id)));
+  }
+  let parentOfClosest = graph[parseInt(graph[closest].parentIds[0])];
+  parentOfClosest.childrenIds = parentOfClosest.childrenIds.filter(
+    (id: string) => parseInt(id) != closest
+  );
+  graph[closest].parentIds[0] = selectedId.toString();
+
+  graph[selectedId].childrenIds.push(closest.toString());
+
+  return graph;
 };
 
 function App() {
@@ -70,13 +119,6 @@ function App() {
 
       return newState;
     });
-  };
-
-  const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
-    const id = parseInt(e.target.id(), 10);
-    //find id of obj being moved
-    //set isDragging True
-    updateDragged(id, true);
   };
 
   const onDragMove = (e: KonvaEventObject<DragEvent>) => {
@@ -115,6 +157,12 @@ function App() {
       updateClosest(e.target.x(), e.target.y(), id, prevState)
     );
   };
+  const handleDragStart = (e: KonvaEventObject<DragEvent>) => {
+    const id = parseInt(e.target.id(), 10);
+    //find id of obj being moved
+    //set isDragging True
+    updateDragged(id, true);
+  };
 
   const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
     //find id of obj being moved
@@ -123,6 +171,16 @@ function App() {
     //find id of obj being moved
     //set isDragging True
     updateDragged(id, false);
+
+    //break graph
+    //remerge
+    setGraphComponents((newState) => adjustGraph(newState, id));
+    //remove all lines / ghost nodes
+    setGraphComponents((newState) => {
+      console.log(newState);
+      return newState;
+    });
+    //redraw graph
   };
 
   return (
@@ -140,7 +198,7 @@ function App() {
               numPoints={5}
               fill={graphComponents[parseInt(key)].color}
               opacity={0.8}
-              draggable
+              draggable={!graphComponents[parseInt(key)].notDraggable}
               shadowColor="black"
               shadowBlur={10}
               shadowOpacity={0.6}

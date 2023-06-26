@@ -5,6 +5,7 @@ export type GraphComponent = {
   y: number;
   x2?: number;
   y2?: number;
+  notDraggable?: boolean;
   parentIds: string[];
   childrenIds: string[];
   isDragging: boolean;

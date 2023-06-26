@@ -42,6 +42,7 @@ export const addLinesToGraph = (graph: Graph) => {
         parentIds: [(end - 1).toString()],
         childrenIds: [(end + 1).toString()],
         isDragging: false,
+        notDraggable: true,
         color: "red",
         elementType: Circle,
       };
