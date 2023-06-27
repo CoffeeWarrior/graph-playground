@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/graph-playground/static/css/main.4b5cb38a.css",
-    "main.js": "/graph-playground/static/js/main.5d58696d.js",
+    "main.js": "/graph-playground/static/js/main.e7fcd14b.js",
     "static/js/787.29a77a19.chunk.js": "/graph-playground/static/js/787.29a77a19.chunk.js",
     "index.html": "/graph-playground/index.html",
     "main.4b5cb38a.css.map": "/graph-playground/static/css/main.4b5cb38a.css.map",
-    "main.5d58696d.js.map": "/graph-playground/static/js/main.5d58696d.js.map",
+    "main.e7fcd14b.js.map": "/graph-playground/static/js/main.e7fcd14b.js.map",
     "787.29a77a19.chunk.js.map": "/graph-playground/static/js/787.29a77a19.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4b5cb38a.css",
-    "static/js/main.5d58696d.js"
+    "static/js/main.e7fcd14b.js"
   ]
 }
