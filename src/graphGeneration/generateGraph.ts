@@ -68,7 +68,7 @@ export const generateGraph = () => {
     x: 100,
     y: 100,
     parentIds: ["1"],
-    childrenIds: ["4"], //["4", "5"],
+    childrenIds: ["4", "5"],
     isDragging: false,
     color: Green,
     elementType: Circle,
@@ -79,7 +79,7 @@ export const generateGraph = () => {
     x: 100,
     y: 100,
     parentIds: ["1"],
-    childrenIds: [], //["6", "7"],
+    childrenIds: ["6", "7"],
     isDragging: false,
     color: Green,
     elementType: Circle,
@@ -97,39 +97,39 @@ export const generateGraph = () => {
     originalColor: Green,
     ghost: false,
   };
-  // graph[5] = {
-  //   x: 100,
-  //   y: 200,
-  //   parentIds: ["2"],
-  //   childrenIds: [],
-  //   isDragging: false,
-  //   color: Green,
-  //   elementType: Circle,
-  //   originalColor: Green,
-  //   ghost: false,
-  // };
-  // graph[6] = {
-  //   x: 100,
-  //   y: 100,
-  //   parentIds: ["3"],
-  //   childrenIds: [],
-  //   isDragging: false,
-  //   color: Green,
-  //   elementType: Circle,
-  //   originalColor: Green,
-  //   ghost: false,
-  // };
-  // graph[7] = {
-  //   x: 100,
-  //   y: 100,
-  //   parentIds: ["3"],
-  //   childrenIds: [],
-  //   isDragging: false,
-  //   color: Green,
-  //   elementType: Circle,
-  //   originalColor: Green,
-  //   ghost: false,
-  // };
+  graph[5] = {
+    x: 100,
+    y: 200,
+    parentIds: ["2"],
+    childrenIds: [],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
+  graph[6] = {
+    x: 100,
+    y: 100,
+    parentIds: ["3"],
+    childrenIds: [],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
+  graph[7] = {
+    x: 100,
+    y: 100,
+    parentIds: ["3"],
+    childrenIds: [],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
 
   return graph;
 };

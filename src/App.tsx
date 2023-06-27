@@ -131,6 +131,7 @@ const adjustGraph = (graph: Graph, grabbedId: number) => {
   graph[closest].childrenIds.push(grabbedId.toString());
   graph[grabbedId].parentIds = [closest.toString()];
   graph[closest].ghost = false;
+  graph[closest].originalColor = Green;
   console.log(graph);
   return graph;
 };
