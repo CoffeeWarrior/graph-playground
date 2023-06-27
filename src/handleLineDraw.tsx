@@ -14,6 +14,7 @@ export const handleLineDraw = (graph: Graph, id: number) => {
   if (!line?.x2 || !line?.y2) {
     return;
   }
+
   return (
     <Line
       points={[line.x, line.y, line.x2, line.y2]}

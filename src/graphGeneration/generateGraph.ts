@@ -11,6 +11,8 @@ export type GraphComponent = {
   isDragging: boolean;
   color: string;
   elementType: elementType;
+  originalColor: string;
+  ghost: boolean;
 };
 
 export const Blue = "#5C5CFF";
@@ -25,56 +27,109 @@ export type Graph = {
 export const generateGraph = () => {
   const graph = {} as Graph;
 
-  let x = 7;
-  [...Array(x)].forEach(
-    (_, i) =>
-      (graph[i] = {
-        x: i != 0 ? Math.random() * window.innerWidth : -500,
-        y: Math.random() * window.innerHeight,
-        parentIds: i != 0 ? [(i - 1).toString()] : [],
-        childrenIds: i != x - 1 ? [(i + 1).toString()] : [],
-        isDragging: false,
-        color: Green,
-        elementType: Circle,
-      })
-  );
+  // let x = 3;
+  // [...Array(x)].forEach(
+  //   (_, i) =>
+  //     (graph[i] = {
+  //       x: i != 0 ? Math.random() * window.innerWidth : -500,
+  //       y: Math.random() * window.innerHeight,
+  //       parentIds: i != 0 ? [(i - 1).toString()] : [],
+  //       childrenIds: i != x - 1 ? [(i + 1).toString()] : [],
+  //       isDragging: false,
+  //       color: Green,
+  //       elementType: Circle,
+  //       originalColor: Green,
+  //       ghost: false,
+  //     })
+  // );
   // graph[0] = {
-  //   x: -50,
-  //   y: -50,
+  //   x: -500,
+  //   y: -500,
   //   parentIds: [],
-  //   childrenIds: [],
+  //   childrenIds: ["1"],
   //   isDragging: false,
   //   color: Green,
   //   elementType: Circle,
+  //   originalColor: Green,
+  //   ghost: false,
   // };
-  // graph[1] = {
+  graph[1] = {
+    x: 100,
+    y: 100,
+    parentIds: [],
+    childrenIds: ["2", "3"],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
+  graph[2] = {
+    x: 100,
+    y: 100,
+    parentIds: ["1"],
+    childrenIds: ["4"], //["4", "5"],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
+  graph[3] = {
+    x: 100,
+    y: 100,
+    parentIds: ["1"],
+    childrenIds: [], //["6", "7"],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
+  graph[4] = {
+    x: 100,
+    y: 100,
+    parentIds: ["2"],
+    childrenIds: [],
+    isDragging: false,
+    color: Green,
+    elementType: Circle,
+    originalColor: Green,
+    ghost: false,
+  };
+  // graph[5] = {
   //   x: 100,
-  //   y: window.innerHeight / 2,
-  //   parentIds: [],
-  //   childrenIds: ["2"],
-  //   isDragging: false,
-  //   color: Green,
-  //   elementType: Circle,
-  // };
-  // /**      */
-  // graph[2] = {
-  //   x: 0,
-  //   y: 0,
-  //   parentIds: ["1"],
-  //   childrenIds: ["3"],
-  //   isDragging: false,
-  //   color: Green,
-  //   elementType: Line,
-  // };
-  // /** */
-  // graph[3] = {
-  //   x: 200,
   //   y: 200,
   //   parentIds: ["2"],
   //   childrenIds: [],
   //   isDragging: false,
   //   color: Green,
   //   elementType: Circle,
+  //   originalColor: Green,
+  //   ghost: false,
   // };
+  // graph[6] = {
+  //   x: 100,
+  //   y: 100,
+  //   parentIds: ["3"],
+  //   childrenIds: [],
+  //   isDragging: false,
+  //   color: Green,
+  //   elementType: Circle,
+  //   originalColor: Green,
+  //   ghost: false,
+  // };
+  // graph[7] = {
+  //   x: 100,
+  //   y: 100,
+  //   parentIds: ["3"],
+  //   childrenIds: [],
+  //   isDragging: false,
+  //   color: Green,
+  //   elementType: Circle,
+  //   originalColor: Green,
+  //   ghost: false,
+  // };
+
   return graph;
 };

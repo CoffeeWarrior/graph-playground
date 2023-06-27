@@ -17,18 +17,57 @@ import { addLinesToGraph } from "./graphGeneration/addLinesToGraph";
 
 const INITIAL_STATE = addLinesToGraph(positionGraph(generateGraph()));
 
-//current task:
-const removeLines = (graph: Graph) => {
-  let deque = [1];
-  while (deque.length > 1) {
-    let currId = deque.shift();
-    if (!currId) {
-      break;
-    }
+const print = (e: any) => console.log(e.target.id());
+
+const removeGraphElement = (graph: Graph, elementId: number) => {
+  try {
+    const parentId = parseInt(graph[elementId].parentIds[0]);
+    const children = graph[elementId].childrenIds;
+
+    // Add children of the element to be deleted to its parent
+    graph[parentId].childrenIds.push(...children);
+
+    // Set the grandparent as the parent for the children
+    children.forEach((c) => {
+      let childId = parseInt(c);
+      graph[childId].parentIds = [parentId.toString()];
+    });
+
+    // Remove the element to be deleted from the children of its parent
+    graph[parentId].childrenIds = graph[parentId].childrenIds.filter(
+      (id) => id !== elementId.toString()
+    );
+
+    // Delete the element from the graph
+    delete graph[elementId];
+  } catch {
+    console.log("caught", elementId);
+    console.log(graph[elementId]);
   }
+
+  return graph;
 };
 
-const removeGhosts = () => {};
+const removeLines = (graph: Graph) => {
+  console.log(graph);
+
+  Object.keys(graph).map((id: string) => {
+    if (graph[parseInt(id)].elementType === Line) {
+      graph = removeGraphElement(graph, parseInt(id));
+    }
+  });
+
+  return graph;
+};
+
+const removeGhosts = (graph: Graph) => {
+  Object.keys(graph).map((id: string) => {
+    if (graph[parseInt(id)].ghost) {
+      removeGraphElement(graph, parseInt(id));
+    }
+  });
+  return graph;
+};
 
 const updateClosest = (
   x: number,
@@ -66,35 +105,33 @@ const updateClosest = (
     if (dist === curr) {
       closest = id;
     }
-    newState[id].color = Green;
+    newState[id].color = newState[id].originalColor;
   });
 
   newState[closest].color = Blue;
   return newState;
 };
+const severNodeFromLine = (graph: Graph, nodeId: number) => {
+  const lineId = parseInt(graph[nodeId].parentIds[0]);
+  console.log(graph[nodeId]);
+  graph[lineId].childrenIds = [];
+  graph[nodeId].parentIds = [];
+};
 
-const adjustGraph = (graph: Graph, selectedId: number) => {
-  const deque = [1];
+const adjustGraph = (graph: Graph, grabbedId: number) => {
+  severNodeFromLine(graph, grabbedId);
   let closest = 1;
-  while (deque.length > 0) {
-    const currId = deque.shift();
-    if (!currId) {
-      break;
-    }
-    if (graph[currId].color === Blue) {
-      closest = currId;
-      break;
-    }
-    graph[currId].childrenIds.forEach((id: string) => deque.push(parseInt(id)));
-  }
-  let parentOfClosest = graph[parseInt(graph[closest].parentIds[0])];
-  parentOfClosest.childrenIds = parentOfClosest.childrenIds.filter(
-    (id: string) => parseInt(id) != closest
-  );
-  graph[closest].parentIds[0] = selectedId.toString();
 
-  graph[selectedId].childrenIds.push(closest.toString());
-
+  Object.keys(graph).forEach((i) => {
+    const id = parseInt(i);
+    if (graph[id].color === Blue) {
+      closest = id;
+    }
+  });
+  graph[closest].childrenIds.push(grabbedId.toString());
+  graph[grabbedId].parentIds = [closest.toString()];
+  graph[closest].ghost = false;
+  console.log(graph);
   return graph;
 };
 
@@ -176,17 +213,17 @@ function App() {
     //remerge
     setGraphComponents((newState) => adjustGraph(newState, id));
     //remove all lines / ghost nodes
-    setGraphComponents((newState) => {
-      console.log(newState);
-      return newState;
-    });
-    //redraw graph
+
+    setGraphComponents((newState) => removeLines(newState));
+    setGraphComponents((newState) => removeGhosts(newState));
+    setGraphComponents((newState) => positionGraph(newState));
+    setGraphComponents((newState) => addLinesToGraph(newState));
+    // //redraw graph
   };
 
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
       <Layer>
-        <Text text="Try to drag a circle" />
         {Object.keys(graphComponents).map((key) => {
           return graphComponents[parseInt(key)].elementType === Circle ? (
             <Circle
@@ -195,7 +232,6 @@ function App() {
               id={key}
               x={graphComponents[parseInt(key)].x}
               y={graphComponents[parseInt(key)].y}
-              numPoints={5}
               fill={graphComponents[parseInt(key)].color}
               opacity={0.8}
               draggable={!graphComponents[parseInt(key)].notDraggable}
@@ -209,7 +245,8 @@ function App() {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               onDragMove={onDragMove}
-            />
+              onMouseOut={print}
+            ></Circle>
           ) : (
             handleLineDraw(graphComponents, parseInt(key))
           );

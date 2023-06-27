@@ -12,7 +12,7 @@ export const addLinesToGraph = (graph: Graph) => {
     if (curr.elementType == Line) {
       break;
     }
-    let end = Object.keys(graph).length;
+    let end = Math.max(...Object.keys(graph).map((id) => parseInt(id))) + 1;
     curr.childrenIds.forEach((id: string) => deque.push(parseInt(id)));
 
     curr.childrenIds.forEach((id: string, i) => {
@@ -32,6 +32,8 @@ export const addLinesToGraph = (graph: Graph) => {
         isDragging: false,
         color: Green,
         elementType: Line,
+        originalColor: Green,
+        ghost: false,
       };
 
       end += 1;
@@ -45,6 +47,8 @@ export const addLinesToGraph = (graph: Graph) => {
         notDraggable: true,
         color: "red",
         elementType: Circle,
+        originalColor: "red",
+        ghost: true,
       };
 
       end += 1;
@@ -59,9 +63,11 @@ export const addLinesToGraph = (graph: Graph) => {
         isDragging: false,
         color: Green,
         elementType: Line,
+        originalColor: Green,
+        ghost: false,
       };
-
       graph[parseInt(id)].parentIds[0] = end.toString();
+      end += 1;
     });
   }
   return graph;

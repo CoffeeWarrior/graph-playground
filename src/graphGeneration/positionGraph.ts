@@ -3,7 +3,7 @@ import { Graph, GraphComponent } from "./generateGraph";
 type DequeElem = [number, number, GraphComponent];
 
 export const positionGraph = (graph: Graph) => {
-  const deque: DequeElem[] = [[100, window.innerHeight / 2, graph[1]]];
+  const deque: DequeElem[] = [[100, 100, graph[1]]];
   while (deque.length > 0) {
     let curr = deque.shift();
     if (!curr) {
@@ -12,11 +12,12 @@ export const positionGraph = (graph: Graph) => {
     let [x, y, node] = curr;
     node.x = x;
     node.y = y;
+    let childrenIdCount = node.childrenIds.length;
     node.childrenIds
-      .map((id) => {
+      .map((id, i) => {
         return [
-          x + 100,
-          window.innerHeight / 2,
+          x + 200,
+          y + (100 * childrenIdCount) / (i + 1),
           graph[parseInt(id)] as GraphComponent,
         ] as DequeElem;
       })
