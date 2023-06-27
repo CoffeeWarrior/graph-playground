@@ -63,6 +63,7 @@ export const generateGraph = () => {
     elementType: Circle,
     originalColor: Green,
     ghost: false,
+    notDraggable: true,
   };
   graph[2] = {
     x: 100,

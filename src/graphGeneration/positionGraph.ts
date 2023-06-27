@@ -1,23 +1,24 @@
 import { Graph, GraphComponent } from "./generateGraph";
 
-type DequeElem = [number, number, GraphComponent];
+type DequeElem = [number, number, number, GraphComponent];
 
 export const positionGraph = (graph: Graph) => {
-  const deque: DequeElem[] = [[100, 100, graph[1]]];
+  const deque: DequeElem[] = [[100, 0, window.innerHeight, graph[1]]];
   while (deque.length > 0) {
     let curr = deque.shift();
     if (!curr) {
       break;
     }
-    let [x, y, node] = curr;
+    let [x, bottom, top, node] = curr;
     node.x = x;
-    node.y = y;
+    node.y = (top + bottom) / 2;
     let childrenIdCount = node.childrenIds.length;
     node.childrenIds
       .map((id, i) => {
         return [
           x + 200,
-          y + (100 * childrenIdCount) / (i + 1),
+          ((top - bottom) / childrenIdCount) * i + bottom,
+          ((top - bottom) / childrenIdCount) * (i + 1) + bottom,
           graph[parseInt(id)] as GraphComponent,
         ] as DequeElem;
       })

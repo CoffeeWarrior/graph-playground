@@ -131,6 +131,7 @@ const adjustGraph = (graph: Graph, grabbedId: number) => {
   graph[closest].childrenIds.push(grabbedId.toString());
   graph[grabbedId].parentIds = [closest.toString()];
   graph[closest].ghost = false;
+  graph[closest].notDraggable = false;
   graph[closest].originalColor = Green;
   console.log(graph);
   return graph;
@@ -225,6 +226,7 @@ function App() {
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
       <Layer>
+        <Text text="pick up a node and drop it to see how the graph changes" />
         {Object.keys(graphComponents).map((key) => {
           return graphComponents[parseInt(key)].elementType === Circle ? (
             <Circle
