@@ -95,6 +95,9 @@ const updateClosest = (
     if (id === selectedId) {
       return;
     }
+    if (id === 1) {
+      return;
+    }
     if (newState[id].elementType == Line) {
       return;
     }
@@ -126,6 +129,7 @@ const adjustGraph = (graph: Graph, grabbedId: number) => {
     const id = parseInt(i);
     if (graph[id].color === Blue) {
       closest = id;
+      graph[closest].color = Green;
     }
   });
   graph[closest].childrenIds.push(grabbedId.toString());
@@ -231,12 +235,12 @@ function App() {
           return graphComponents[parseInt(key)].elementType === Circle ? (
             <Circle
               key={key}
-              radius={10}
+              radius={20}
               id={key}
               x={graphComponents[parseInt(key)].x}
               y={graphComponents[parseInt(key)].y}
               fill={graphComponents[parseInt(key)].color}
-              opacity={0.8}
+              opacity={1}
               draggable={!graphComponents[parseInt(key)].notDraggable}
               shadowColor="black"
               shadowBlur={10}

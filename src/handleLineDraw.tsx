@@ -19,7 +19,7 @@ export const handleLineDraw = (graph: Graph, id: number) => {
     <Line
       points={[line.x, line.y, line.x2, line.y2]}
       stroke="black"
-      strokeWidth={4}
+      strokeWidth={3}
       closed={true}
     />
   );
